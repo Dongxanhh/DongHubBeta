@@ -163,3 +163,14 @@ local MiscTab = Window:CreateTab("Misc", 4483345998)
 
 MiscTab:CreateButton({
    Name = "Close Menu",
+   Callback = function()
+      Rayfield:Destroy()
+   end,
+})
+
+Rayfield:Notify({
+   Title = "DongxanhHub On!",
+   Content = "Hello",
+   Duration = 5,
+   Image = 4483345998,
+})
