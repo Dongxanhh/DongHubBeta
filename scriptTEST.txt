@@ -57,6 +57,46 @@ MainTab:CreateToggle({
    end,
 })
 
+_G.QuestAuto = false
+
+MainTab:CreateToggle({
+   Name = "Quest Auto",
+   CurrentValue = false,
+   Flag = "QuestAutoToggle",
+   Callback = function(Value)
+      _G.QuestAuto = Value
+      
+      if _G.QuestAuto then
+         spawn(function()
+            while _G.QuestAuto do
+               pcall(function()
+                   local args1 = {
+                       [1] = workspace.NPCs:FindFirstChild("S\225\186\163nh").Quests.Trainer_Marcus
+                   }
+                   game:GetService("ReplicatedStorage").Modules.Shared.Event.Remotes.TalkToNPCStart:FireServer(unpack(args1))
+                   
+                   task.wait(0.5)
+                   
+                   local args2 = {
+                       [1] = "rookie_training_2"
+                   }
+                   game:GetService("ReplicatedStorage").Modules.Shared.Event.Remotes.QuestStart:InvokeServer(unpack(args2))
+                   
+                   task.wait(0.5)
+                   
+                   local args3 = {
+                       [1] = workspace.NPCs:FindFirstChild("S\225\186\163nh").Quests.Trainer_Marcus
+                   }
+                   game:GetService("ReplicatedStorage").Modules.Shared.Event.Remotes.TalkToNPC:FireServer(unpack(args3))
+               end)
+               
+               task.wait(5)
+            end
+         end)
+      end
+   end,
+}
+
 local PlayerTab = Window:CreateTab("Player", 4483345998)
 
 PlayerTab:CreateSlider({
