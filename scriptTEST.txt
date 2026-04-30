@@ -59,7 +59,6 @@ MainTab:CreateToggle({
 
 _G.QuestAuto = false
 
--- Tọa độ đã được rút gọn chỉ giữ lại X, Y, Z để tránh lỗi khi copy qua GitHub
 local NpcPosition = CFrame.new(1028.89368, 246.434509, 2067.24268)
 local FarmPosition = CFrame.new(1076.27795, 246.434509, 2151.44067)
 
