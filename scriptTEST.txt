@@ -106,4 +106,69 @@ MainTab:CreateToggle({
                                [1] = "rookie_training_2"
                            }
                            
-                           local questResult = game:GetService("ReplicatedStorage").
+                           local questResult = game:GetService("ReplicatedStorage").Modules.Shared.Event.Remotes.QuestStart:InvokeServer(unpack(args2))
+                           
+                           task.wait(1.0)
+                           
+                           local args3 = {
+                               [1] = targetNpc
+                           }
+                           game:GetService("ReplicatedStorage").Modules.Shared.Event.Remotes.TalkToNPC:FireServer(unpack(args3))
+                           
+                           if questResult ~= false then
+                               task.wait(2.5)
+                               humanoidRoot.CFrame = FarmPosition
+                               task.wait(45)
+                           end
+                       end
+                   end
+               end)
+               
+               task.wait(1)
+            end
+         end)
+      end
+   end,
+})
+
+local PlayerTab = Window:CreateTab("Player", 4483345998)
+
+PlayerTab:CreateSlider({
+   Name = "Speed",
+   Range = {16, 500},
+   Increment = 1,
+   Suffix = " Speed",
+   CurrentValue = 16,
+   Flag = "SpeedSlider",
+   Callback = function(Value)
+      game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
+   end,
+})
+
+PlayerTab:CreateSlider({
+   Name = "Jump",
+   Range = {50, 500},
+   Increment = 1,
+   Suffix = " Power",
+   CurrentValue = 50,
+   Flag = "JumpSlider",
+   Callback = function(Value)
+      game.Players.LocalPlayer.Character.Humanoid.JumpPower = Value
+   end,
+})
+
+local MiscTab = Window:CreateTab("Misc", 4483345998)
+
+MiscTab:CreateButton({
+   Name = "Close Menu",
+   Callback = function()
+      Rayfield:Destroy()
+   end,
+})
+
+Rayfield:Notify({
+   Title = "DongxanhHub On!",
+   Content = "Hello",
+   Duration = 5,
+   Image = 4483345998,
+})
