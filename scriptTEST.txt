@@ -95,7 +95,7 @@ MainTab:CreateToggle({
          end)
       end
    end,
-}
+})
 
 local PlayerTab = Window:CreateTab("Player", 4483345998)
 
