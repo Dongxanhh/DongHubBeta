@@ -75,20 +75,21 @@ MainTab:CreateToggle({
                pcall(function()
                    local localPlayer = game.Players.LocalPlayer
                    local character = localPlayer.Character
-                   local humanoidRootPart = character and character:FindFirstChild("HumanoidRootPart")
+                   local humanoidRoot = character and character:FindFirstChild("HumanoidRootPart")
                    
-                   if humanoidRootPart then
-                       local originalCFrame = humanoidRootPart.CFrame
+                   if localRoot then
+                       local originalCFrame = localRoot.CFrame
                        
-                       humanoidRootPart.CFrame = NpcPosition
-                       task.wait(0.5)
+                       -- 1. Teleport to NPC
+                       localRoot.CFrame = NpcPosition
+                       task.wait(1.5)
                        
                        local targetNpc = nil
                        local minDist = 5
                        for _, v in pairs(workspace.NPCs:GetChildren()) do
                            local part = v:FindFirstChild("HumanoidRootPart") or v:FindFirstChildWhichIsA("Part")
                            if part then
-                               local dist = (part.Position - humanoidRootPart.Position).Magnitude
+                               local dist = (part.Position - localRoot.Position).Magnitude
                                if dist < minDist then
                                    minDist = dist
                                    targetNpc = v
@@ -103,14 +104,14 @@ MainTab:CreateToggle({
                            }
                            game:GetService("ReplicatedStorage").Modules.Shared.Event.Remotes.TalkToNPCStart:FireServer(unpack(args1))
                            
-                           task.wait(0.5)
+                           task.wait(1.0)
                            
                            local args2 = {
                                [1] = "rookie_training_2"
                            }
                            game:GetService("ReplicatedStorage").Modules.Shared.Event.Remotes.QuestStart:InvokeServer(unpack(args2))
                            
-                           task.wait(0.5)
+                           task.wait(1.0)
                            
                            local args3 = {
                                [1] = targetNpc
@@ -118,13 +119,15 @@ MainTab:CreateToggle({
                            game:GetService("ReplicatedStorage").Modules.Shared.Event.Remotes.TalkToNPC:FireServer(unpack(args3))
                        end
                        
-                       task.wait(1.0)
+                       task.wait(2.5)
                        
-                       humanoidRootPart.CFrame = FarmPosition
+                       -- 2. Teleport to Farm
+                       localRoot.CFrame = FarmPosition
+                       
+                       -- 3. Wait at the farm to complete the quest before returning
+                       task.wait(45) -- You can change this time if the quest takes longer or shorter
                    end
                end)
-               
-               task.wait(5)
             end
          end)
       end
