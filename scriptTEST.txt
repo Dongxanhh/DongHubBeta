@@ -77,11 +77,10 @@ MainTab:CreateToggle({
                    local character = localPlayer.Character
                    local humanoidRoot = character and character:FindFirstChild("HumanoidRootPart")
                    
-                   if localRoot then
-                       local originalCFrame = localRoot.CFrame
+                   if humanoidRoot then
+                       local originalCFrame = humanoidRoot.CFrame
                        
-                       -- 1. Teleport to NPC
-                       localRoot.CFrame = NpcPosition
+                       humanoidRoot.CFrame = NpcPosition
                        task.wait(1.5)
                        
                        local targetNpc = nil
@@ -89,7 +88,7 @@ MainTab:CreateToggle({
                        for _, v in pairs(workspace.NPCs:GetChildren()) do
                            local part = v:FindFirstChild("HumanoidRootPart") or v:FindFirstChildWhichIsA("Part")
                            if part then
-                               local dist = (part.Position - localRoot.Position).Magnitude
+                               local dist = (part.Position - humanoidRoot.Position).Magnitude
                                if dist < minDist then
                                    minDist = dist
                                    targetNpc = v
@@ -121,13 +120,13 @@ MainTab:CreateToggle({
                        
                        task.wait(2.5)
                        
-                       -- 2. Teleport to Farm
-                       localRoot.CFrame = FarmPosition
+                       humanoidRoot.CFrame = FarmPosition
                        
-                       -- 3. Wait at the farm to complete the quest before returning
-                       task.wait(45) -- You can change this time if the quest takes longer or shorter
+                       task.wait(45)
                    end
                end)
+               
+               task.wait(1)
             end
          end)
       end
@@ -164,14 +163,3 @@ local MiscTab = Window:CreateTab("Misc", 4483345998)
 
 MiscTab:CreateButton({
    Name = "Close Menu",
-   Callback = function()
-      Rayfield:Destroy()
-   end,
-})
-
-Rayfield:Notify({
-   Title = "DongxanhHub On!",
-   Content = "Hello",
-   Duration = 5,
-   Image = 4483345998,
-})
