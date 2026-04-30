@@ -59,6 +59,10 @@ MainTab:CreateToggle({
 
 _G.QuestAuto = false
 
+-- Tọa độ đã được rút gọn chỉ giữ lại X, Y, Z để tránh lỗi khi copy qua GitHub
+local NpcPosition = CFrame.new(1028.89368, 246.434509, 2067.24268)
+local FarmPosition = CFrame.new(1076.27795, 246.434509, 2151.44067)
+
 MainTab:CreateToggle({
    Name = "Quest Auto",
    CurrentValue = false,
@@ -70,24 +74,55 @@ MainTab:CreateToggle({
          spawn(function()
             while _G.QuestAuto do
                pcall(function()
-                   local args1 = {
-                       [1] = workspace.NPCs:FindFirstChild("S\225\186\163nh").Quests.Trainer_Marcus
-                   }
-                   game:GetService("ReplicatedStorage").Modules.Shared.Event.Remotes.TalkToNPCStart:FireServer(unpack(args1))
+                   local localPlayer = game.Players.LocalPlayer
+                   local character = localPlayer.Character
+                   local humanoidRootPart = character and character:FindFirstChild("HumanoidRootPart")
                    
-                   task.wait(0.5)
-                   
-                   local args2 = {
-                       [1] = "rookie_training_2"
-                   }
-                   game:GetService("ReplicatedStorage").Modules.Shared.Event.Remotes.QuestStart:InvokeServer(unpack(args2))
-                   
-                   task.wait(0.5)
-                   
-                   local args3 = {
-                       [1] = workspace.NPCs:FindFirstChild("S\225\186\163nh").Quests.Trainer_Marcus
-                   }
-                   game:GetService("ReplicatedStorage").Modules.Shared.Event.Remotes.TalkToNPC:FireServer(unpack(args3))
+                   if humanoidRootPart then
+                       local originalCFrame = humanoidRootPart.CFrame
+                       
+                       humanoidRootPart.CFrame = NpcPosition
+                       task.wait(0.5)
+                       
+                       local targetNpc = nil
+                       local minDist = 5
+                       for _, v in pairs(workspace.NPCs:GetChildren()) do
+                           local part = v:FindFirstChild("HumanoidRootPart") or v:FindFirstChildWhichIsA("Part")
+                           if part then
+                               local dist = (part.Position - humanoidRootPart.Position).Magnitude
+                               if dist < minDist then
+                                   minDist = dist
+                                   targetNpc = v
+                                   break
+                               end
+                           end
+                       end
+                       
+                       if targetNpc then
+                           local args1 = {
+                               [1] = targetNpc
+                           }
+                           game:GetService("ReplicatedStorage").Modules.Shared.Event.Remotes.TalkToNPCStart:FireServer(unpack(args1))
+                           
+                           task.wait(0.5)
+                           
+                           local args2 = {
+                               [1] = "rookie_training_2"
+                           }
+                           game:GetService("ReplicatedStorage").Modules.Shared.Event.Remotes.QuestStart:InvokeServer(unpack(args2))
+                           
+                           task.wait(0.5)
+                           
+                           local args3 = {
+                               [1] = targetNpc
+                           }
+                           game:GetService("ReplicatedStorage").Modules.Shared.Event.Remotes.TalkToNPC:FireServer(unpack(args3))
+                       end
+                       
+                       task.wait(1.0)
+                       
+                       humanoidRootPart.CFrame = FarmPosition
+                   end
                end)
                
                task.wait(5)
@@ -123,10 +158,10 @@ PlayerTab:CreateSlider({
    end,
 })
 
-local MiscTab = Window:CreateTab("Player", 4483345998)
+local MiscTab = Window:CreateTab("Misc", 4483345998)
 
 MiscTab:CreateButton({
-   Name = "Đóng Menu",
+   Name = "Close Menu",
    Callback = function()
       Rayfield:Destroy()
    end,
