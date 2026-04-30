@@ -1,0 +1,100 @@
+ocal LocalizationService = game:GetService("LocalizationService")
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Window = Rayfield:CreateWindow({
+   Name = "DongxanhHub | Beta0.1 Menu",
+   LoadingTitle = "Loading DongxanhHub...",
+   LoadingSubtitle = "by Dong",
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = "DongHubConfig",
+      FileName = "MainHub"
+   },
+   KeySystem = false
+})
+
+local MainTab = Window:CreateTab("FarmLevel", 4483362458)
+
+_G.FarmLevel = false
+
+MainTab:CreateToggle({
+   Name = "Farm Level",
+   CurrentValue = false,
+   Flag = "FarmLevelToggle",
+   Callback = function(Value)
+      _G.FarmLevel = Value
+      
+      if _G.FarmLevel then
+         spawn(function()
+            while _G.FarmLevel do
+               task.wait(0.05) 
+               
+               pcall(function()
+                   local localChar = game:GetService("Players").LocalPlayer.Character
+                   
+                   local args1 = {
+                       [1] = localChar,
+                       [2] = "Melee"
+                   }
+                   game:GetService("ReplicatedStorage").Modules.Shared.Event.Remotes.RequestMeleeHitbox:FireServer(unpack(args1))
+                   
+                   local mobsFolder = workspace:FindFirstChild("Mobs")
+                   if mobsFolder then
+                       for _, mob in ipairs(mobsFolder:GetChildren()) do
+                           local args3 = {
+                               [1] = mob,
+                               [2] = "Melee"
+                           }
+                           game:GetService("ReplicatedStorage").Modules.Shared.Event.Remotes.RequestMeleeHitbox:FireServer(unpack(args3))
+                       end
+                   end
+               end)
+               
+               print("Farm...")
+            end
+         end)
+      end
+   end,
+})
+
+local PlayerTab = Window:CreateTab("Player", 4483345998)
+
+PlayerTab:CreateSlider({
+   Name = "Speed",
+   Range = {16, 500},
+   Increment = 1,
+   Suffix = " Speed",
+   CurrentValue = 16,
+   Flag = "SpeedSlider",
+   Callback = function(Value)
+      game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
+   end,
+})
+
+PlayerTab:CreateSlider({
+   Name = "Jump",
+   Range = {50, 500},
+   Increment = 1,
+   Suffix = " Power",
+   CurrentValue = 50,
+   Flag = "JumpSlider",
+   Callback = function(Value)
+      game.Players.LocalPlayer.Character.Humanoid.JumpPower = Value
+   end,
+})
+
+local MiscTab = Window:CreateTab("Player", 4483345998)
+
+MiscTab:CreateButton({
+   Name = "Đóng Menu",
+   Callback = function()
+      Rayfield:Destroy()
+   end,
+})
+
+Rayfield:Notify({
+   Title = "DongxanhHub On!",
+   Content = "Hello",
+   Duration = 5,
+   Image = 4483345998,
+})
