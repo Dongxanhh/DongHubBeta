@@ -66,7 +66,7 @@ _G.QuestLv20_30 = false
 local NpcPosition = CFrame.new(1028.89368, 246.434509, 2067.24268)
 local FarmPosition = CFrame.new(1076.27795, 246.434509, 2151.44067)
 
-QuestSection:CreateToggle({
+MainTab:CreateToggle({
    Name = "QuestLv1-10",
    CurrentValue = false,
    Flag = "Quest1_10",
@@ -122,7 +122,7 @@ QuestSection:CreateToggle({
    end,
 })
 
-QuestSection:CreateToggle({
+MainTab:CreateToggle({
    Name = "QuestLv10-20",
    CurrentValue = false,
    Flag = "Quest10_20",
@@ -134,7 +134,7 @@ QuestSection:CreateToggle({
    end,
 })
 
-QuestSection:CreateToggle({
+MainTab:CreateToggle({
    Name = "QuestLv20-30",
    CurrentValue = false,
    Flag = "Quest20_30",
