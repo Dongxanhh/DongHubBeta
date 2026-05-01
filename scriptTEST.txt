@@ -79,44 +79,33 @@ MainTab:CreateToggle({
                    
                    if humanoidRoot then
                        humanoidRoot.CFrame = NpcPosition
-                       task.wait(1.5)
+                       task.wait(0.5)
                        
-                       local targetNpc = nil
-                       local minDist = math.huge
-                       for _, v in pairs(workspace.NPCs:GetChildren()) do
-                           local part = v:FindFirstChild("HumanoidRootPart") or v:FindFirstChildWhichIsA("Part")
-                           if part then
-                               local dist = (part.Position - humanoidRoot.Position).Magnitude
-                               if dist < minDist then
-                                   minDist = dist
-                                   targetNpc = v
-                               end
-                           end
-                       end
+                       local npc = workspace.NPCs:FindFirstChild("S\225\186\163nh") or workspace.NPCs:FindFirstChild("Sánh")
+                       local questObj = npc and npc:FindFirstChild("Quests") and npc.Quests:FindFirstChild("Trainer_Marcus")
                        
-                       if targetNpc then
+                       if questObj then
                            local args1 = {
-                               [1] = targetNpc
+                               [1] = questObj
                            }
-                           game:GetService("ReplicatedStorage").Modules.Shared.Event.Remotes.TalkToNPCStart:FireServer(unpack(args1))
+                           game:GetService("ReplicatedStorage").Modules.Shared.Event.Remotes.TalkToNPC:FireServer(unpack(args1))
                            
-                           task.wait(1.0)
+                           task.wait(0.2)
                            
                            local args2 = {
                                [1] = "rookie_training_2"
                            }
+                           game:GetService("ReplicatedStorage").Modules.Shared.Event.Remotes.ExitQuest:FireServer(unpack(args2))
                            
-                           local questResult = game:GetService("ReplicatedStorage").Modules.Shared.Event.Remotes.QuestStart:InvokeServer(unpack(args2))
-                           
-                           task.wait(1.0)
+                           task.wait(0.2)
                            
                            local args3 = {
-                               [1] = targetNpc
+                               [1] = "rookie_training_2"
                            }
-                           game:GetService("ReplicatedStorage").Modules.Shared.Event.Remotes.TalkToNPC:FireServer(unpack(args3))
+                           local questResult = game:GetService("ReplicatedStorage").Modules.Shared.Event.Remotes.QuestStart:InvokeServer(unpack(args3))
                            
                            if questResult ~= false then
-                               task.wait(2.5)
+                               task.wait(0.5)
                                humanoidRoot.CFrame = FarmPosition
                                task.wait(45)
                            end
