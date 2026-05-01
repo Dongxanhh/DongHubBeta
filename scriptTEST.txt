@@ -57,68 +57,79 @@ MainTab:CreateToggle({
    end,
 })
 
-_G.QuestAuto = false
+local QuestSection = MainTab:CreateSection("Quest Settings")
 
+_G.QuestType = "Tắt"
 local NpcPosition = CFrame.new(1028.89368, 246.434509, 2067.24268)
 local FarmPosition = CFrame.new(1076.27795, 246.434509, 2151.44067)
 
-MainTab:CreateToggle({
-   Name = "Quest Auto",
-   CurrentValue = false,
-   Flag = "QuestAutoToggle",
+QuestSection:CreateDropdown({
+   Name = "Auto Quest Mode",
+   Options = {"Tắt", "QuestLv1-10", "QuestLv10-20", "QuestLv20-30"},
+   CurrentValue = "Tắt",
+   Flag = "QuestDropdown",
    Callback = function(Value)
-      _G.QuestAuto = Value
-      
-      if _G.QuestAuto then
-         spawn(function()
-            while _G.QuestAuto do
-               pcall(function()
-                   local localPlayer = game.Players.LocalPlayer
-                   local character = localPlayer.Character
-                   local humanoidRoot = character and character:FindFirstChild("HumanoidRootPart")
-                   
-                   if humanoidRoot then
-                       humanoidRoot.CFrame = NpcPosition
-                       task.wait(0.5)
-                       
-                       local npc = workspace.NPCs:FindFirstChild("S\225\186\163nh") or workspace.NPCs:FindFirstChild("Sánh")
-                       local questObj = npc and npc:FindFirstChild("Quests") and npc.Quests:FindFirstChild("Trainer_Marcus")
-                       
-                       if questObj then
-                           local args1 = {
-                               [1] = questObj
-                           }
-                           game:GetService("ReplicatedStorage").Modules.Shared.Event.Remotes.TalkToNPC:FireServer(unpack(args1))
-                           
-                           task.wait(0.2)
-                           
-                           local args2 = {
-                               [1] = "rookie_training_2"
-                           }
-                           game:GetService("ReplicatedStorage").Modules.Shared.Event.Remotes.ExitQuest:FireServer(unpack(args2))
-                           
-                           task.wait(0.2)
-                           
-                           local args3 = {
-                               [1] = "rookie_training_2"
-                           }
-                           local questResult = game:GetService("ReplicatedStorage").Modules.Shared.Event.Remotes.QuestStart:InvokeServer(unpack(args3))
-                           
-                           if questResult ~= false then
-                               task.wait(0.5)
-                               humanoidRoot.CFrame = FarmPosition
-                               task.wait(8)
-                           end
-                       end
-                   end
-               end)
-               
-               task.wait(1)
-            end
-         end)
+      _G.QuestType = Value
+      if Value == "Tắt" then
+         print("Đã tắt Auto Quest")
+      else
+         print("Đã chọn nhánh: " .. Value)
       end
    end,
 })
+
+-- Vòng lặp kiểm tra nhánh quest đang chọn
+spawn(function()
+   while true do
+      task.wait(1)
+      
+      if _G.QuestType == "QuestLv1-10" then
+         pcall(function()
+             local localPlayer = game.Players.LocalPlayer
+             local character = localPlayer.Character
+             local humanoidRoot = character and character:FindFirstChild("HumanoidRootPart")
+             
+             if humanoidRoot then
+                 humanoidRoot.CFrame = NpcPosition
+                 task.wait(0.5)
+                 
+                 local npc = workspace.NPCs:FindFirstChild("S\225\186\163nh") or workspace.NPCs:FindFirstChild("Sánh")
+                 local questObj = npc and npc:FindFirstChild("Quests") and npc.Quests:FindFirstChild("Trainer_Marcus")
+                 
+                 if questObj then
+                     local args1 = {
+                         [1] = questObj
+                     }
+                     game:GetService("ReplicatedStorage").Modules.Shared.Event.Remotes.TalkToNPC:FireServer(unpack(args1))
+                     
+                     task.wait(0.2)
+                     
+                     local args2 = {
+                         [1] = "rookie_training_2"
+                     }
+                     game:GetService("ReplicatedStorage").Modules.Shared.Event.Remotes.ExitQuest:FireServer(unpack(args2))
+                     
+                     task.wait(0.2)
+                     
+                     local args3 = {
+                         [1] = "rookie_training_2"
+                     }
+                     local questResult = game:GetService("ReplicatedStorage").Modules.Shared.Event.Remotes.QuestStart:InvokeServer(unpack(args3))
+                     
+                     if questResult ~= false then
+                         task.wait(0.5)
+                         humanoidRoot.CFrame = FarmPosition
+                         task.wait(8.5) -- Thời gian delay trước khi lặp lại nhận quest
+                     end
+                 end
+             end
+         end)
+      elseif _G.QuestType == "QuestLv10-20" or _G.QuestType == "QuestLv20-30" then
+         -- Nhánh phụ test, không thực thi tác vụ
+         task.wait(1)
+      end
+   end
+end)
 
 local PlayerTab = Window:CreateTab("Player", 4483345998)
 
@@ -157,7 +168,8 @@ MiscTab:CreateButton({
 
 Rayfield:Notify({
    Title = "DongxanhHub On!",
-   Content = "Hello",
+   Content = "",
    Duration = 5,
    Image = 4483345998,
 })
+
