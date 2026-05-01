@@ -27,7 +27,7 @@ MainTab:CreateToggle({
       if _G.FarmLevel then
          spawn(function()
             while _G.FarmLevel do
-               task.wait(0.5) -- Tăng thời gian chờ để tránh lag và đơ game
+               task.wait(0.5)
                
                pcall(function()
                    local localChar = game:GetService("Players").LocalPlayer.Character
@@ -73,9 +73,9 @@ MainTab:CreateToggle({
                pcall(function()
                    local localPlayer = game.Players.LocalPlayer
                    local character = localPlayer.Character
-                   local humanoidRoot = character and character:FindFirstChild("HumanoidRootPart")
+                   localRoot = character and character:FindFirstChild("HumanoidRootPart")
                    
-                   if humanoidRoot then
+                   if localRoot then
                        local propsFolder = workspace:FindFirstChild("Props")
                        if propsFolder then
                            local closestStone = nil
@@ -90,7 +90,7 @@ MainTab:CreateToggle({
                                    end
                                    
                                    if position then
-                                       local distance = (position - humanoidRoot.Position).Magnitude
+                                       local distance = (position - localRoot.Position).Magnitude
                                        if distance <= 25 then
                                            closestStone = prop
                                            break
@@ -137,13 +137,13 @@ MainTab:CreateToggle({
                pcall(function()
                    local localPlayer = game.Players.LocalPlayer
                    local character = localPlayer.Character
-                   local humanoidRoot = character and character:FindFirstChild("HumanoidRootPart")
+                   localRoot = character and character:FindFirstChild("HumanoidRootPart")
                    
-                   if humanoidRoot then
-                       humanoidRoot.CFrame = NpcPosition
+                   if localRoot then
+                       localRoot.CFrame = NpcPosition
                        task.wait(0.5)
                        
-                       local npc = workspace.NPCs:FindFirstChild("S\225\186\163nh") or workspace.NPCs:FindFirstChild("Sánh")
+                       local npc = workspace.NPCs:FindFirstChild("Sánh") or workspace.NPCs:FindFirstChild("S\225\186\163nh")
                        local questObj = npc and npc:FindFirstChild("Quests") and npc.Quests:FindFirstChild("Trainer_Marcus")
                        
                        if questObj then
@@ -168,7 +168,7 @@ MainTab:CreateToggle({
                            
                            if questResult ~= false then
                                task.wait(0.5)
-                               humanoidRoot.CFrame = FarmPosition
+                               localRoot.CFrame = FarmPosition
                                task.wait(8.5)
                            end
                        end
@@ -181,7 +181,6 @@ MainTab:CreateToggle({
    end,
 })
 
--- Logic QuestLv10-20
 MainTab:CreateToggle({
    Name = "QuestLv10-20",
    CurrentValue = false,
@@ -194,14 +193,13 @@ MainTab:CreateToggle({
                pcall(function()
                    local localPlayer = game.Players.LocalPlayer
                    local character = localPlayer.Character
-                   local humanoidRoot = character and character:FindFirstChild("HumanoidRootPart")
+                   localRoot = character and character:FindFirstChild("HumanoidRootPart")
                    
-                   if humanoidRoot then
-                       -- 1. TP đến NPC và nhận nhiệm vụ
-                       humanoidRoot.CFrame = NpcPosition_10_20
+                   if localRoot then
+                       localRoot.CFrame = NpcPosition_10_20
                        task.wait(0.5)
                        
-                       local npc = workspace.NPCs:FindFirstChild("S\225\186\163nh") or workspace.NPCs:FindFirstChild("Sánh")
+                       local npc = workspace.NPCs:FindFirstChild("Sánh") or workspace.NPCs:FindFirstChild("S\225\186\163nh")
                        local questObj = npc and npc:FindFirstChild("Quests") and npc.Quests:FindFirstChild("Scout Lena")
                        
                        if questObj then
@@ -219,7 +217,6 @@ MainTab:CreateToggle({
                            if questResult ~= false then
                                task.wait(1.0)
                                
-                               -- Tự động trang bị cúp (Pickaxe)
                                local function equipPickaxe()
                                    local pick = character and character:FindFirstChild("Stone Pickaxe") or localPlayer.Backpack and localPlayer.Backpack:FindFirstChild("Stone Pickaxe")
                                    if pick then
@@ -234,7 +231,6 @@ MainTab:CreateToggle({
                                equipPickaxe()
                                task.wait(0.5)
 
-                               -- Danh sách 14 tọa độ mỏ đá
                                local stonePoints = {
                                    Vector3.new(959.74, 237.21, 2344.04), Vector3.new(951.51, 237.34, 2424.15),
                                    Vector3.new(969.20, 237.90, 2392.66), Vector3.new(966.01, 239.10, 2454.91),
@@ -245,11 +241,10 @@ MainTab:CreateToggle({
                                    Vector3.new(1096.13, 240.07, 2323.91), Vector3.new(1065.61, 235.79, 2284.28)
                                }
                                
-                               -- Vòng lặp di chuyển qua 14 tọa độ để đào đá
                                for _, point in ipairs(stonePoints) do
                                    if not _G.QuestLv10_20 then break end
-                                   humanoidRoot.CFrame = CFrame.new(point)
-                                   task.wait(2.0) -- Đợi 2 giây đào đá
+                                   localRoot.CFrame = CFrame.new(point)
+                                   task.wait(2.0)
                                    
                                    pcall(function()
                                        local propsFolder = workspace:FindFirstChild("Props")
@@ -271,7 +266,6 @@ MainTab:CreateToggle({
                                
                                task.wait(2.0)
                                
-                               -- Trang bị kiếm (Melee)
                                local function equipWeapon()
                                    local tool = character and character:FindFirstChildOfClass("Tool") or localPlayer.Backpack and localPlayer.Backpack:FindFirstChildOfClass("Tool")
                                    if tool then
@@ -280,7 +274,6 @@ MainTab:CreateToggle({
                                end
                                equipWeapon()
 
-                               -- Danh sách 10 tọa độ đánh quái
                                local monsterPoints = {
                                    Vector3.new(1015.40, 237.08, 2294.40), Vector3.new(1008.58, 237.38, 2321.07),
                                    Vector3.new(952.47, 237.35, 2403.68), Vector3.new(950.51, 238.07, 2470.99),
@@ -289,10 +282,9 @@ MainTab:CreateToggle({
                                    Vector3.new(1057.65, 241.70, 2505.70), Vector3.new(1070.86, 238.99, 2369.20)
                                }
                                
-                               -- Vòng lặp di chuyển qua 10 tọa độ để đánh quái
                                for _, mPoint in ipairs(monsterPoints) do
                                    if not _G.QuestLv10_20 then break end
-                                   humanoidRoot.CFrame = CFrame.new(mPoint)
+                                   localRoot.CFrame = CFrame.new(mPoint)
                                    task.wait(1.5) 
                                    
                                    pcall(function()
@@ -311,11 +303,11 @@ MainTab:CreateToggle({
                                
                                task.wait(3.0)
                                
-                               humanoidRoot.CFrame = NpcPosition_10_20
+                               localRoot.CFrame = NpcPosition_10_20
                                task.wait(1.0)
                                
                                pcall(function()
-                                   local npcObj = workspace.NPCs:FindFirstChild("S\225\186\163nh") or workspace.NPCs:FindFirstChild("Sánh")
+                                   local npcObj = workspace.NPCs:FindFirstChild("Sánh") or workspace.NPCs:FindFirstChild("S\225\186\163nh")
                                    local questNpc = npcObj and npcObj:FindFirstChild("Quests") and npcObj.Quests:FindFirstChild("Scout Lena")
                                    if questNpc then
                                        local argsTalk = { [1] = questNpc }
