@@ -69,8 +69,7 @@ MainTab:CreateToggle({
       if _G.MineAuto then
          spawn(function()
             while _G.MineAuto do
-               task.wait(0.5) 
-               
+               task.wait(0.5)               
                pcall(function()
                    local localPlayer = game.Players.LocalPlayer
                    local character = localPlayer.Character
@@ -80,7 +79,6 @@ MainTab:CreateToggle({
                        local propsFolder = workspace:FindFirstChild("Props")
                        if propsFolder then
                            local closestStone = nil
-                           
                            
                            for _, prop in ipairs(propsFolder:GetChildren()) do
                                if string.find(prop.Name, "Stone") or prop.Name == "Stone Chunk2" then
@@ -93,14 +91,13 @@ MainTab:CreateToggle({
                                    
                                    if position then
                                        local distance = (position - humanoidRoot.Position).Magnitude
-                                                                           if distance <= 25 then
+                                       if distance <= 25 then
                                            closestStone = prop
                                            break
                                        end
                                    end
                                end
                            end
-                           
                            
                            if closestStone then
                                local args = {
@@ -118,7 +115,6 @@ MainTab:CreateToggle({
    end,
 })
 
--- Tạo tiêu đề nhóm Quest Auto
 local QuestSection = MainTab:CreateSection("Quest Auto")
 
 _G.QuestLv1_10 = false
@@ -127,6 +123,7 @@ _G.QuestLv20_30 = false
 
 local NpcPosition = CFrame.new(1028.89368, 246.434509, 2067.24268)
 local FarmPosition = CFrame.new(1076.27795, 246.434509, 2151.44067)
+local NpcPosition_10_20 = CFrame.new(944.70, 244.59, 2317.55)
 
 MainTab:CreateToggle({
    Name = "QuestLv1-10",
@@ -184,6 +181,7 @@ MainTab:CreateToggle({
    end,
 })
 
+-- Logic QuestLv10-20
 MainTab:CreateToggle({
    Name = "QuestLv10-20",
    CurrentValue = false,
@@ -191,7 +189,139 @@ MainTab:CreateToggle({
    Callback = function(Value)
       _G.QuestLv10_20 = Value
       if Value then
-         print("Đã bật nhánh QuestLv10-20 (Test)")
+         spawn(function()
+            while _G.QuestLv10_20 do
+               pcall(function()
+                   local localPlayer = game.Players.LocalPlayer
+                   local character = localPlayer.Character
+                   local humanoidRoot = character and character:FindFirstChild("HumanoidRootPart")
+                   
+                   if humanoidRoot then
+                       -- 1. TP đến NPC và nhận nhiệm vụ
+                       humanoidRoot.CFrame = NpcPosition_10_20
+                       task.wait(0.5)
+                       
+                       local npc = workspace.NPCs:FindFirstChild("S\225\186\163nh") or workspace.NPCs:FindFirstChild("Sánh")
+                       local questObj = npc and npc:FindFirstChild("Quests") and npc.Quests:FindFirstChild("Scout Lena")
+                       
+                       if questObj then
+                           local args1 = { [1] = questObj }
+                           game:GetService("ReplicatedStorage").Modules.Shared.Event.Remotes.TalkToNPCStart:FireServer(unpack(args1))
+                           task.wait(0.2)
+                           
+                           local args4 = { [1] = "scout_job" }
+                           game:GetService("ReplicatedStorage").Modules.Shared.Event.Remotes.ExitQuest:FireServer(unpack(args4))
+                           task.wait(0.2)
+                           
+                           local args2 = { [1] = "scout_job" }
+                           local questResult = game:GetService("ReplicatedStorage").Modules.Shared.Event.Remotes.QuestStart:InvokeServer(unpack(args2))
+                           
+                           if questResult ~= false then
+                               task.wait(1.0)
+                                                         (Pickaxe)
+                               local function equipPickaxe()
+                                   local pick = character and character:FindFirstChild("Stone Pickaxe") or localPlayer.Backpack and localPlayer.Backpack:FindFirstChild("Stone Pickaxe")
+                                   if pick then
+                                       local args = {
+                                           [1] = "Stone Pickaxe",
+                                           [2] = "OnEquipped",
+                                           [3] = { [1] = pick }
+                                       }
+                                       game:GetService("ReplicatedStorage").Modules.Shared.Event.Remotes.ClientToServerCallback:FireServer(unpack(args))
+                                   end
+                               end
+                               equipPickaxe()
+                               task.wait(0.5)
+
+                                                          local stonePoints = {
+                                   Vector3.new(959.74, 237.21, 2344.04), Vector3.new(951.51, 237.34, 2424.15),
+                                   Vector3.new(969.20, 237.90, 2392.66), Vector3.new(966.01, 239.10, 2454.91),
+                                   Vector3.new(949.79, 237.92, 2491.97), Vector3.new(957.68, 237.79, 2515.93),
+                                   Vector3.new(993.49, 240.84, 2499.96), Vector3.new(979.93, 240.59, 2482.42),
+                                   Vector3.new(1051.80, 241.80, 2524.37), Vector3.new(1084.56, 243.31, 2518.09),
+                                   Vector3.new(1086.22, 243.41, 2440.50), Vector3.new(1092.57, 242.14, 2371.67),
+                                   Vector3.new(1096.13, 240.07, 2323.91), Vector3.new(1065.61, 235.79, 2284.28)
+                               }
+                               
+                                                          for _, point in ipairs(stonePoints) do
+                                   if not _G.QuestLv10_20 then break end
+                                   humanoidRoot.CFrame = CFrame.new(point)
+                                   task.wait(2.0) -- Đợi 2 giây đào đá
+                                   
+                                   pcall(function()
+                                       local propsFolder = workspace:FindFirstChild("Props")
+                                       if propsFolder then
+                                           local closestStone = nil
+                                           for _, prop in ipairs(propsFolder:GetChildren()) do
+                                               if string.find(prop.Name, "Stone") or prop.Name == "Stone Chunk2" then
+                                                   closestStone = prop
+                                                   break
+                                               end
+                                           end
+                                           if closestStone then
+                                               local argsMine = { [1] = closestStone, [2] = "Pickaxe" }
+                                               game:GetService("ReplicatedStorage").Modules.Shared.Event.Remotes.RequestMeleeHitbox:FireServer(unpack(argsMine))
+                                           end
+                                       end
+                                   end)
+                               end
+                               
+                               task.wait(2.0)
+                               
+                                                            local function equipWeapon()
+                                   local tool = character and character:FindFirstChildOfClass("Tool") or localPlayer.Backpack and localPlayer.Backpack:FindFirstChildOfClass("Tool")
+                                   if tool then
+                                       character.Humanoid:EquipTool(tool)
+                                   end
+                               end
+                               equipWeapon()
+
+                                                            local monsterPoints = {
+                                   Vector3.new(1015.40, 237.08, 2294.40), Vector3.new(1008.58, 237.38, 2321.07),
+                                   Vector3.new(952.47, 237.35, 2403.68), Vector3.new(950.51, 238.07, 2470.99),
+                                   Vector3.new(990.67, 239.73, 2512.67), Vector3.new(992.16, 240.99, 2450.68),
+                                   Vector3.new(1022.31, 240.16, 2421.21), Vector3.new(1045.32, 242.07, 2450.65),
+                                   Vector3.new(1057.65, 241.70, 2505.70), Vector3.new(1070.86, 238.99, 2369.20)
+                               }
+                               
+                                                            for _, mPoint in ipairs(monsterPoints) do
+                                   if not _G.QuestLv10_20 then break end
+                                   humanoidRoot.CFrame = CFrame.new(mPoint)
+                                   task.wait(1.5) 
+                                   
+                                   pcall(function()
+                                       local argsMeele = { [1] = character, [2] = "Melee" }
+                                       game:GetService("ReplicatedStorage").Modules.Shared.Event.Remotes.RequestMeleeHitbox:FireServer(unpack(argsMeele))
+                                       
+                                       local mobsFolder = workspace:FindFirstChild("Mobs")
+                                       if mobsFolder then
+                                           for _, mob in ipairs(mobsFolder:GetChildren()) do
+                                               local argsMob = { [1] = mob, [2] = "Melee" }
+                                               game:GetService("ReplicatedStorage").Modules.Shared.Event.Remotes.RequestMeleeHitbox:FireServer(unpack(argsMob))
+                                           end
+                                       end
+                                   end)
+                               end
+                               
+                               task.wait(3.0)                              
+                                                           humanoidRoot.CFrame = NpcPosition_10_20
+                               task.wait(1.0)
+                               
+                               pcall(function()
+                                   local npcObj = workspace.NPCs:FindFirstChild("S\225\186\163nh") or workspace.NPCs:FindFirstChild("Sánh")
+                                   local questNpc = npcObj and npcObj:FindFirstChild("Quests") and npcObj.Quests:FindFirstChild("Scout Lena")
+                                   if questNpc then
+                                       local argsTalk = { [1] = questNpc }
+                                       game:GetService("ReplicatedStorage").Modules.Shared.Event.Remotes.TalkToNPC:FireServer(unpack(argsTalk))
+                                   end
+                               end)
+                           end
+                       end
+                   end
+               end)
+               task.wait(1)
+            end
+         end)
       end
    end,
 })
