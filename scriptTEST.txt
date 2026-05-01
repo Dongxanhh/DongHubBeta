@@ -27,7 +27,7 @@ MainTab:CreateToggle({
       if _G.FarmLevel then
          spawn(function()
             while _G.FarmLevel do
-               task.wait(0.05) 
+               task.wait(0.5) -- Tăng thời gian chờ để tránh lag và đơ game
                
                pcall(function()
                    local localChar = game:GetService("Players").LocalPlayer.Character
