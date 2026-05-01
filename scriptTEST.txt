@@ -18,9 +18,9 @@ local MainTab = Window:CreateTab("FarmLevel", 4483362458)
 _G.FarmLevel = false
 
 MainTab:CreateToggle({
-   Name = "Farm Level",
+   Name = "FarmAuto",
    CurrentValue = false,
-   Flag = "FarmLevelToggle",
+   Flag = "FarmAutoToggle",
    Callback = function(Value)
       _G.FarmLevel = Value
       
@@ -57,6 +57,68 @@ MainTab:CreateToggle({
    end,
 })
 
+_G.MineAuto = false
+
+MainTab:CreateToggle({
+   Name = "MineAuto",
+   CurrentValue = false,
+   Flag = "MineAutoToggle",
+   Callback = function(Value)
+      _G.MineAuto = Value
+      
+      if _G.MineAuto then
+         spawn(function()
+            while _G.MineAuto do
+               task.wait(0.5) 
+               
+               pcall(function()
+                   local localPlayer = game.Players.LocalPlayer
+                   local character = localPlayer.Character
+                   local humanoidRoot = character and character:FindFirstChild("HumanoidRootPart")
+                   
+                   if humanoidRoot then
+                       local propsFolder = workspace:FindFirstChild("Props")
+                       if propsFolder then
+                           local closestStone = nil
+                           
+                           
+                           for _, prop in ipairs(propsFolder:GetChildren()) do
+                               if string.find(prop.Name, "Stone") or prop.Name == "Stone Chunk2" then
+                                   local position = nil
+                                   if prop:IsA("Model") and prop.PrimaryPart then
+                                       position = prop.PrimaryPart.Position
+                                   elseif prop:IsA("Part") then
+                                       position = prop.Position
+                                   end
+                                   
+                                   if position then
+                                       local distance = (position - humanoidRoot.Position).Magnitude
+                                                                           if distance <= 25 then
+                                           closestStone = prop
+                                           break
+                                       end
+                                   end
+                               end
+                           end
+                           
+                           
+                           if closestStone then
+                               local args = {
+                                   [1] = closestStone,
+                                   [2] = "Pickaxe"
+                               }
+                               game:GetService("ReplicatedStorage").Modules.Shared.Event.Remotes.RequestMeleeHitbox:FireServer(unpack(args))
+                           end
+                       end
+                   end
+               end)
+            end
+         end)
+      end
+   end,
+})
+
+-- Tạo tiêu đề nhóm Quest Auto
 local QuestSection = MainTab:CreateSection("Quest Auto")
 
 _G.QuestLv1_10 = false
