@@ -1,9 +1,9 @@
 local LocalizationService = game:GetService("LocalizationService")
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/main/source'))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "DongxanhHub | Beta0.1 Menu",
-   LoadingTitle = "Loading DongxanhHub...",
+   Name = "DongHubX | Beta0.1 Menu",
+   LoadingTitle = "Loading DongHubX...",
    LoadingSubtitle = "by Dong",
    ConfigurationSaving = {
       Enabled = true,
@@ -15,6 +15,15 @@ local Window = Rayfield:CreateWindow({
 
 local MainTab = Window:CreateTab("FarmLevel", 4483362458)
 
+local function getNPC()
+   for _, child in ipairs(workspace.NPCs:GetChildren()) do
+       if child:FindFirstChild("Quests") then
+           return child
+       end
+   end
+   return nil
+end
+
 _G.FarmLevel = false
 
 MainTab:CreateToggle({
@@ -23,34 +32,48 @@ MainTab:CreateToggle({
    Flag = "FarmAutoToggle",
    Callback = function(Value)
       _G.FarmLevel = Value
-      
       if _G.FarmLevel then
          spawn(function()
             while _G.FarmLevel do
-               task.wait(0.05) 
-               
+               task.wait(0.3)
                pcall(function()
-                   local localChar = game:GetService("Players").LocalPlayer.Character
-                   
-                   local args1 = {
-                       [1] = localChar,
-                       [2] = "Melee"
-                   }
-                   game:GetService("ReplicatedStorage").Modules.Shared.Event.Remotes.RequestMeleeHitbox:FireServer(unpack(args1))
-                   
-                   local mobsFolder = workspace:FindFirstChild("Mobs")
-                   if mobsFolder then
-                       for _, mob in ipairs(mobsFolder:GetChildren()) do
-                           local args3 = {
-                               [1] = mob,
-                               [2] = "Melee"
+                   local localPlayer = game:GetService("Players").LocalPlayer
+                   local localChar = localPlayer.Character
+                   localRoot = localChar and localChar:FindFirstChild("HumanoidRootPart")
+                   if localRoot then
+                       local args1 = {
+                           [1] = "Iron Sword",
+                           [2] = "OnActivated",
+                           [3] = {
+                               [1] = localChar:FindFirstChild("Iron Sword"),
+                               [2] = 1
                            }
-                           game:GetService("ReplicatedStorage").Modules.Shared.Event.Remotes.RequestMeleeHitbox:FireServer(unpack(args3))
+                       }
+                       game:GetService("ReplicatedStorage").Modules.Shared.Event.Remotes.ClientToServerCallback:FireServer(unpack(args1))
+                       
+                       local mobsFolder = workspace:FindFirstChild("Mobs")
+                       if mobsFolder then
+                           for _, mob in ipairs(mobsFolder:GetChildren()) do
+                               local humanoid = mob:FindFirstChild("Humanoid")
+                               if humanoid and humanoid.Health > 0 then
+                                   local mobRoot = mob:FindFirstChild("HumanoidRootPart") or mob:FindFirstChildWhichIsA("Part")
+                                   if mobRoot then
+                                       local distance = (mobRoot.Position - localRoot.Position).Magnitude
+                                       if distance <= 45 then
+                                           local args3 = {
+                                               [1] = mob,
+                                               [2] = "Melee"
+                                           }
+                                           for i = 1, 15 do
+                                               game:GetService("ReplicatedStorage").Modules.Shared.Event.Remotes.RequestMeleeHitbox:FireServer(unpack(args3))
+                                           end
+                                       end
+                                   end
+                               end
+                           end
                        end
                    end
                end)
-               
-               print("Farm...")
             end
          end)
       end
@@ -65,23 +88,18 @@ MainTab:CreateToggle({
    Flag = "MineAutoToggle",
    Callback = function(Value)
       _G.MineAuto = Value
-      
       if _G.MineAuto then
          spawn(function()
             while _G.MineAuto do
-               task.wait(0.5) -- Delay vừa phải để tránh spam liên tục
-               
+               task.wait(0.5)
                pcall(function()
                    local localPlayer = game.Players.LocalPlayer
                    local character = localPlayer.Character
-                   local humanoidRoot = character and character:FindFirstChild("HumanoidRootPart")
-                   
-                   if humanoidRoot then
+                   localRoot = character and character:FindFirstChild("HumanoidRootPart")
+                   if localRoot then
                        local propsFolder = workspace:FindFirstChild("Props")
                        if propsFolder then
                            local closestStone = nil
-                           
-                           -- Tìm kiếm các hòn đá gần nhân vật
                            for _, prop in ipairs(propsFolder:GetChildren()) do
                                if string.find(prop.Name, "Stone") or prop.Name == "Stone Chunk2" then
                                    local position = nil
@@ -90,10 +108,8 @@ MainTab:CreateToggle({
                                    elseif prop:IsA("Part") then
                                        position = prop.Position
                                    end
-                                   
                                    if position then
-                                       local distance = (position - humanoidRoot.Position).Magnitude
-                                       -- Bán kính đào đá
+                                       local distance = (position - localRoot.Position).Magnitude
                                        if distance <= 25 then
                                            closestStone = prop
                                            break
@@ -101,8 +117,6 @@ MainTab:CreateToggle({
                                    end
                                end
                            end
-                           
-                           -- Gửi sự kiện đào đá
                            if closestStone then
                                local args = {
                                    [1] = closestStone,
@@ -119,11 +133,9 @@ MainTab:CreateToggle({
    end,
 })
 
--- Tạo tiêu đề nhóm Quest Auto
 local QuestSection = MainTab:CreateSection("Quest Auto")
 
 _G.QuestLv1_10 = false
-_G.QuestLv10_20 = false
 _G.QuestLv20_30 = false
 
 local NpcPosition = CFrame.new(1028.89368, 246.434509, 2067.24268)
@@ -141,38 +153,30 @@ MainTab:CreateToggle({
                pcall(function()
                    local localPlayer = game.Players.LocalPlayer
                    local character = localPlayer.Character
-                   local humanoidRoot = character and character:FindFirstChild("HumanoidRootPart")
-                   
-                   if humanoidRoot then
-                       humanoidRoot.CFrame = NpcPosition
+                   localRoot = character and character:FindFirstChild("HumanoidRootPart")
+                   if localRoot then
+                       localRoot.CFrame = NpcPosition
                        task.wait(0.5)
-                       
-                       local npc = workspace.NPCs:FindFirstChild("S\225\186\163nh") or workspace.NPCs:FindFirstChild("Sánh")
+                       local npc = getNPC()
                        local questObj = npc and npc:FindFirstChild("Quests") and npc.Quests:FindFirstChild("Trainer_Marcus")
-                       
                        if questObj then
                            local args1 = {
                                [1] = questObj
                            }
                            game:GetService("ReplicatedStorage").Modules.Shared.Event.Remotes.TalkToNPC:FireServer(unpack(args1))
-                           
                            task.wait(0.2)
-                           
                            local args2 = {
                                [1] = "rookie_training_2"
                            }
                            game:GetService("ReplicatedStorage").Modules.Shared.Event.Remotes.ExitQuest:FireServer(unpack(args2))
-                           
                            task.wait(0.2)
-                           
                            local args3 = {
                                [1] = "rookie_training_2"
                            }
                            local questResult = game:GetService("ReplicatedStorage").Modules.Shared.Event.Remotes.QuestStart:InvokeServer(unpack(args3))
-                           
                            if questResult ~= false then
                                task.wait(0.5)
-                               humanoidRoot.CFrame = FarmPosition
+                               localRoot.CFrame = FarmPosition
                                task.wait(8.5)
                            end
                        end
@@ -181,18 +185,6 @@ MainTab:CreateToggle({
                task.wait(1)
             end
          end)
-      end
-   end,
-})
-
-MainTab:CreateToggle({
-   Name = "QuestLv10-20",
-   CurrentValue = false,
-   Flag = "Quest10_20",
-   Callback = function(Value)
-      _G.QuestLv10_20 = Value
-      if Value then
-         print("Đã bật nhánh QuestLv10-20 (Test)")
       end
    end,
 })
@@ -245,7 +237,7 @@ MiscTab:CreateButton({
 })
 
 Rayfield:Notify({
-   Title = "DongxanhHub On!",
+   Title = "DongHubX On!",
    Content = "",
    Duration = 5,
    Image = 4483345998,
