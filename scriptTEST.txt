@@ -1,5 +1,4 @@
-local LocalizationService = game:GetService("LocalizationService")
-local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/main/source'))()
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
    Name = "DongHubX | Beta0.1 Menu",
@@ -102,19 +101,8 @@ MainTab:CreateToggle({
                            local closestStone = nil
                            for _, prop in ipairs(propsFolder:GetChildren()) do
                                if string.find(prop.Name, "Stone") or prop.Name == "Stone Chunk2" then
-                                   local position = nil
-                                   if prop:IsA("Model") and prop.PrimaryPart then
-                                       position = prop.PrimaryPart.Position
-                                   elseif prop:IsA("Part") then
-                                       position = prop.Position
-                                   end
-                                   if position then
-                                       local distance = (position - localRoot.Position).Magnitude
-                                       if distance <= 25 then
-                                           closestStone = prop
-                                           break
-                                       end
-                                   end
+                                   closestStone = prop
+                                   break
                                end
                            end
                            if closestStone then
@@ -136,7 +124,6 @@ MainTab:CreateToggle({
 local QuestSection = MainTab:CreateSection("Quest Auto")
 
 _G.QuestLv1_10 = false
-_G.QuestLv20_30 = false
 
 local NpcPosition = CFrame.new(1028.89368, 246.434509, 2067.24268)
 local FarmPosition = CFrame.new(1076.27795, 246.434509, 2151.44067)
@@ -189,18 +176,6 @@ MainTab:CreateToggle({
    end,
 })
 
-MainTab:CreateToggle({
-   Name = "QuestLv20-30",
-   CurrentValue = false,
-   Flag = "Quest20_30",
-   Callback = function(Value)
-      _G.QuestLv20_30 = Value
-      if Value then
-         print("Đã bật nhánh QuestLv20-30 (Test)")
-      end
-   end,
-})
-
 local PlayerTab = Window:CreateTab("Player", 4483345998)
 
 PlayerTab:CreateSlider({
@@ -237,7 +212,7 @@ MiscTab:CreateButton({
 })
 
 Rayfield:Notify({
-   Title = "DongHubX On!",
+   Title = "DongHub On!",
    Content = "",
    Duration = 5,
    Image = 4483345998,
